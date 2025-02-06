@@ -1,6 +1,6 @@
 import sqlite3
 
-from models import Contact, Email, SocialMedia, Telephone
+from models import Contact, ContactBook, Email, SocialMedia, Telephone
 
 # Database models optimized for persistence (tables)
 
@@ -20,7 +20,6 @@ class ContactRepository:
 
         self._execute_query(
             query="""
-
         CREATE TABLE IF NOT EXISTS contacts (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         name TEXT NOT NULL
@@ -30,7 +29,6 @@ class ContactRepository:
 
         self._execute_query(
             query="""
-
         CREATE TABLE IF NOT EXISTS contact_details (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         contact_id INTEGER NOT NULL,
@@ -102,7 +100,7 @@ class ContactRepository:
 
         return contact
 
-    def get_all_contacts(self) -> list[Contact]:
+    def get_all_contacts(self) -> ContactBook:
         """Retrieve all contacts from the database"""
 
         rows = self._fetch_all(query="SELECT * FROM contacts")
@@ -140,7 +138,7 @@ class ContactRepository:
 
             contacts.append(contact)
 
-        return contacts
+        return ContactBook(contacts=contacts)
 
     def get_contact_by_name(self, name: str) -> tuple[Contact, str] | None:
         """Retrieve a contact by name"""

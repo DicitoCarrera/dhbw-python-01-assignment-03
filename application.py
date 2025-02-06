@@ -1,5 +1,4 @@
 from dataclasses import dataclass
-from typing import List, Optional
 
 from models import (
     Contact,
@@ -47,7 +46,7 @@ class GetContactByNameQuery:
 
 
 class ContactApplicationService:
-    def __init__(self, repository: ContactRepository):
+    def __init__(self, repository: ContactRepository) -> None:
         self.repository: ContactRepository = repository
 
     # Command Handlers
@@ -56,11 +55,11 @@ class ContactApplicationService:
         """
         Handle the command to add a new contact using domain functionality.
         """
-        current_contacts: List[Contact] = self.repository.get_all_contacts()
+        current_contacts: ContactBook = self.repository.get_all_contacts()
 
-        updated_contact_book = add_contact(
+        updated_contact_book: ContactBook = add_contact(
             new_contact=command.contact,
-            contact_book=ContactBook(contacts=current_contacts),
+            contact_book=current_contacts,
         )
 
         self.repository.add_contact(contact=updated_contact_book.contacts[-1])
@@ -71,12 +70,13 @@ class ContactApplicationService:
         """
         Handle the command to edit an existing contact using domain functionality.
         """
-        current_contacts = self.repository.get_all_contacts()
 
-        updated_contacts = edit_contact(
+        current_contacts: ContactBook = self.repository.get_all_contacts()
+
+        updated_contacts: ContactBook = edit_contact(
             search_name=command.old_name,
             new_contact=command.new_contact,
-            contact_book=ContactBook(contacts=current_contacts),
+            contact_book=current_contacts,
         )
 
         if updated_contacts != current_contacts:
@@ -93,9 +93,12 @@ class ContactApplicationService:
         Handle the command to delete an existing contact using domain functionality.
         """
 
-        current_contacts = self.repository.get_all_contacts()
+        current_contacts: ContactBook = self.repository.get_all_contacts()
 
-        updated_contacts = delete_contact(command.name, ContactBook(current_contacts))
+        updated_contacts: ContactBook = delete_contact(
+            search_name=command.name,
+            contact_book=current_contacts,
+        )
 
         if updated_contacts != current_contacts:
             self.repository.delete_contact(name=command.name)
@@ -106,26 +109,26 @@ class ContactApplicationService:
 
     # Query Handlers
 
-    def handle_get_all_contacts(self, query: GetAllContactsQuery) -> List[Contact]:
+    def handle_get_all_contacts(self, query: GetAllContactsQuery) -> list[Contact]:
         """
         Handle the query to retrieve all contacts using domain functionality.
         """
 
-        contacts = self.repository.get_all_contacts()
+        contacts: ContactBook = self.repository.get_all_contacts()
 
         return contacts
 
     def handle_get_contact_by_name(
         self, query: GetContactByNameQuery
-    ) -> Optional[Contact]:
+    ) -> Contact | None:
         """
-
         Handle the query to retrieve a contact by name using domain functionality.
-
         """
 
-        current_contacts = self.repository.get_all_contacts()
+        current_contacts: ContactBook = self.repository.get_all_contacts()
 
-        contact = search_contact(query.name, ContactBook(current_contacts))
+        contact: Contact | None = search_contact(
+            search_name=query.name, contact_book=current_contacts
+        )
 
         return contact
