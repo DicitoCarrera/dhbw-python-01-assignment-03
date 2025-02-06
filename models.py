@@ -1,5 +1,4 @@
 from dataclasses import dataclass
-from typing import List, Optional
 
 # Domain Models
 
@@ -37,9 +36,9 @@ class SocialMedia(ContactDetail):
 
 
 class Contact:
-    def __init__(self, name: str, details: List[ContactDetail]) -> None:
+    def __init__(self, name: str, details: list[ContactDetail]) -> None:
         self.name: str = name
-        self.details: List[ContactDetail] = details
+        self.details: list[ContactDetail] = details
 
     def __str__(self) -> str:
         details_str = "\n".join(map(str, self.details))
@@ -48,7 +47,7 @@ class Contact:
 
 @dataclass
 class ContactBook:
-    contacts: List[Contact]
+    contacts: list[Contact]
 
 
 # Functional Operations
@@ -68,7 +67,7 @@ def list_contacts(contact_book: ContactBook) -> str:
 
 
 # Search for a contact by name
-def search_contact(search_name: str, contact_book: ContactBook) -> Optional[Contact]:
+def search_contact(search_name: str, contact_book: ContactBook) -> Contact | None:
     return next(
         (contact for contact in contact_book.contacts if contact.name == search_name),
         None,
